@@ -1,0 +1,21 @@
+<div class="bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 p-6">
+  <h3 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white"><%= dog_schedule.dog.name %></h3>
+  
+  <div data-controller="schedule-edit">
+    <%= render partial: 'dashboard/dog_schedule_status', locals: { dog_schedule: dog_schedule } %>
+
+    <div data-schedule-edit-target="form" class="hidden">
+      <%= form_with(model: dog_schedule, url: dog_schedule_path(dog_schedule), method: :patch) do |form| %>
+        <%= form.select :status, DogSchedule.statuses.keys.map { |s| [s.humanize, s] }, {}, class: "mr-2 text-sm border-gray-300 rounded-md shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" %>
+        <%= form.submit "Update", class: "text-sm text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded" %>
+        <button type="button" data-action="click->schedule-edit#hideForm" class="text-sm text-gray-600 hover:text-gray-800 ml-2">
+          Cancel
+        </button>
+      <% end %>
+    </div>
+  </div>
+  
+  <% if dog_schedule.walker != current_user %>
+    <p class="mb-1 text-gray-700 dark:text-gray-400">Walker: <%= dog_schedule.walker.name %></p>
+  <% end %>
+</div>

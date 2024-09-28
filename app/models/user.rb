@@ -9,4 +9,8 @@ class User < ApplicationRecord
   has_many :dogs # if dog_owner
   has_many :assignments # if dog_walker or manager
   has_many :shifts, through: :assignments
+  has_many :dog_schedules, foreign_key: 'user_id', dependent: :destroy
+  has_many :assigned_dogs, through: :dog_schedules, source: :dog
+
+  scope :walkers, -> { where(role: 'walker').or(where(role: 'manager')) }
 end

@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "dog_schedule_status_#{@dog_schedule.id}" do %>
+  <%= render partial: 'dashboard/dog_schedule_status', locals: { dog_schedule: @dog_schedule } %>
+<% end %>

@@ -1,0 +1,38 @@
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+      <tr>
+        <th scope="col" class="px-6 py-3">Dog Name</th>
+        <th scope="col" class="px-6 py-3">Owner</th>
+        <th scope="col" class="px-6 py-3">Walker</th>
+        <th scope="col" class="px-6 py-3">Shift</th>
+        <th scope="col" class="px-6 py-3">Status</th>
+        <th scope="col" class="px-6 py-3">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @dog_schedules.each do |schedule| %>
+        <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+          <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            <%= schedule.dog.name %>
+          </th>
+          <td class="px-6 py-4">
+            <%= schedule.dog.owner.name %>
+          </td>
+          <td class="px-6 py-4">
+            <%= schedule.walker.name %>
+          </td>
+          <td class="px-6 py-4">
+            <%= schedule.shift&.pretty_time %>
+          </td>
+          <td class="px-6 py-4">
+            <%= schedule.status.titleize %>
+          </td>
+          <td class="px-6 py-4">
+            <%= link_to 'Edit', edit_dog_schedule_path(schedule), class: "font-medium text-blue-600 dark:text-blue-500 hover:underline" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

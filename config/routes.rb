@@ -16,5 +16,13 @@ Rails.application.routes.draw do
     end
   end
 
+  root to: 'dashboard#index'
+  resources :dogs
+  resources :dog_schedules
+  resources :shifts
+  resources :users
   resources :vans
+
+  get 'dog_schedules/:id/edit_status', to: 'dog_schedules#edit_status', as: :edit_dog_schedule_status
+  patch 'dog_schedules/:id/update_status', to: 'dog_schedules#update_status', as: :update_dog_schedule_status
 end
