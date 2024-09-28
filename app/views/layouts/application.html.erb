@@ -12,7 +12,13 @@
   </head>
 
   <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+    <main>
+      <% if user_signed_in? %>
+        <%= render 'layouts/navbar' %>
+        <% if current_user.manager? || current_user.dog_walker? %>
+          <%= render 'layouts/sidebar' %>
+        <% end %>
+      <% end %>
       <%= yield %>
     </main>
   </body>
