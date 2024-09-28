@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_28_140255) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_28_141203) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "dog_subscriptions", force: :cascade do |t|
+    t.bigint "dog_id", null: false
+    t.boolean "monday"
+    t.boolean "tuesday"
+    t.boolean "wednesday"
+    t.boolean "thursday"
+    t.boolean "friday"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["dog_id"], name: "index_dog_subscriptions_on_dog_id"
+  end
 
   create_table "dogs", force: :cascade do |t|
     t.string "name"
@@ -44,5 +56,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_28_140255) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "dog_subscriptions", "dogs"
   add_foreign_key "dogs", "users"
 end
