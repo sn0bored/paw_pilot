@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_28_141833) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_28_142532) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -37,11 +37,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_28_141833) do
 
   create_table "dog_subscriptions", force: :cascade do |t|
     t.bigint "dog_id", null: false
-    t.boolean "monday"
-    t.boolean "tuesday"
-    t.boolean "wednesday"
-    t.boolean "thursday"
-    t.boolean "friday"
+    t.boolean "monday", default: false
+    t.boolean "tuesday", default: false
+    t.boolean "wednesday", default: false
+    t.boolean "thursday", default: false
+    t.boolean "friday", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["dog_id"], name: "index_dog_subscriptions_on_dog_id"
