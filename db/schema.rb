@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_28_141424) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_28_141640) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "assignments", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "shift_id", null: false
+    t.bigint "van_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["shift_id"], name: "index_assignments_on_shift_id"
+    t.index ["user_id"], name: "index_assignments_on_user_id"
+    t.index ["van_id"], name: "index_assignments_on_van_id"
+  end
 
   create_table "dog_subscriptions", force: :cascade do |t|
     t.bigint "dog_id", null: false
@@ -59,12 +70,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_28_141424) do
   create_table "vans", force: :cascade do |t|
     t.string "name"
     t.integer "capacity"
-    t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_vans_on_user_id"
   end
 
+  add_foreign_key "assignments", "shifts"
+  add_foreign_key "assignments", "users"
+  add_foreign_key "assignments", "vans"
   add_foreign_key "dog_subscriptions", "dogs"
   add_foreign_key "dogs", "users"
 end
