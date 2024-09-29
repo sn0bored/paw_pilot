@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   resources :shifts do
     member do
       patch :reassign_dog, defaults: { format: :turbo_stream }
+      patch :unassign_dog, defaults: { format: :turbo_stream }
     end
   end
   resources :users

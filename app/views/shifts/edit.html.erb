@@ -1,20 +1,43 @@
 <h1 class="text-2xl font-bold mb-4">Edit Shift: <%= @shift.pretty_time %></h1>
-
+<div class="flex justify-end mb-4">
+  <%= button_to 'Delete Shift', shift_path(@shift), method: :delete, class: "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" %>
+</div>
+<% if local_assigns[:error].present? %>
+  <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+    <span class="block sm:inline"><%= error %></span>
+  </div>
+<% end %>
 <div data-controller="shift-management" 
      data-shift-management-shift-id-value="<%= @shift.id %>"
      data-shift-management-active-dropzone-class="bg-gray-100"
      data-shift-management-active-item-class="opacity-50"
      data-shift-management-drop-target-class="border-2 border-blue-500">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <% @shift.walkers.each do |walker| %>
+
+  <div class="mb-4">
+    <h2 class="text-xl font-semibold mb-2">Available Dogs</h2>
+    <div class="available-dogs-list min-h-[50px] max-h-[150px] overflow-y-auto border-2 border-dashed border-gray-300 p-2 rounded-md flex flex-wrap gap-2"
+         data-shift-management-target="availableDogsList">
+      <% @available_dogs.each do |dog| %>
+        <div class="dog-item bg-green-100 p-2 rounded cursor-move text-sm flex items-center" 
+             draggable="true" 
+             data-dog-id="<%= dog.id %>">
+          <%= dog.name %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <% User.dog_walker.each do |walker| %>
       <div class="bg-white shadow-md rounded-lg p-4">
-        <h2 class="text-xl font-semibold mb-2"><%= walker.name %></h2>
+        <h2 class="text-lg font-semibold mb-2"><%= walker.name %></h2>
+        
         <div class="dog-list min-h-[100px] border-2 border-dashed border-gray-300 p-2 rounded-md" 
              data-shift-management-target="dogList" 
              data-walker-id="<%= walker.id %>"
              data-action="dragenter->shift-management#dragenter dragleave->shift-management#dragleave">
           <% @shift.dog_schedules.where(walker: walker).each do |schedule| %>
-            <div class="dog-item bg-blue-100 p-2 mb-2 rounded cursor-move" 
+            <div class="dog-item bg-blue-100 p-2 mb-2 rounded cursor-move text-sm" 
                  draggable="true" 
                  data-dog-id="<%= schedule.dog.id %>">
               <%= schedule.dog.name %>

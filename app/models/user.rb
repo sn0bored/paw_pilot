@@ -13,4 +13,8 @@ class User < ApplicationRecord
   has_many :assigned_dogs, through: :dog_schedules, source: :dog
 
   scope :walkers, -> { where(role: 'walker').or(where(role: 'manager')) }
+
+  def dogs_for_shift(shift)
+    dog_schedules.where(shift: shift).includes(:dog)
+  end
 end

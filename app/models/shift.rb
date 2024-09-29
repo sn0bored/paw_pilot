@@ -8,6 +8,6 @@ class Shift < ApplicationRecord
   enum time_of_day: { morning: 0, afternoon: 1 }
 
   def pretty_time
-    "#{date.strftime('%A, %B %d')} | #{time_of_day.titleize}"
+    "#{date.strftime('%A, %B %d')} | #{time_of_day&.titleize}"
   end
 end

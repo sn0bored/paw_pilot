@@ -1,8 +1,12 @@
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <div class="mb-4 text-right">
+    <%= link_to 'New Shift', new_shift_path, class: "px-4 py-2 font-medium mt-8 text-white bg-blue-600 rounded-md hover:bg-blue-700" %>
+  </div>
+  
   <% @shifts.each do |shift| %>
     <div class="mb-8">
       <h2 class="text-xl font-bold mb-2">
-        <%= shift.date.strftime('%A, %B %d') %> - <%= shift.time_of_day.titleize %>
+        <%= shift.date.strftime('%A, %B %d') %> - <%= shift.time_of_day&.titleize %>
       </h2>
       <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">

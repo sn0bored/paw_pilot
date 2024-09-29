@@ -1,0 +1,19 @@
+<h1 class="text-2xl font-bold mb-4">Create New Shift</h1>
+
+<%= form_with(model: @shift, local: true) do |form| %>
+  <div class="mb-4">
+    <%= form.label :date, class: "block mb-2" %>
+    <%= form.date_field :date, class: "w-full p-2 border rounded" %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :time_of_day, class: "block mb-2" %>
+    <%= form.select :time_of_day, ['morning', 'afternoon'], {}, class: "w-full p-2 border rounded" %>
+  </div>
+
+  <%= form.submit 'Create Shift', class: "mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+<% end %>
+
+<div class="mt-4">
+  <%= link_to 'Back to Shifts', shifts_path, class: "text-blue-600 hover:underline" %>
+</div>
