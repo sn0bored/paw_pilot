@@ -4,7 +4,7 @@ RSpec.describe "Manager", type: :feature do
   let(:manager) { create(:user, :manager) }
   let(:walker1) { create(:user, :dog_walker) }
   let(:walker2) { create(:user, :dog_walker) }
-  let(:shift) { create(:shift, date: Date.today, time_of_day: :morning) }
+  let(:shift) { create(:shift, date: Date.new(2024, 1, 1), time_of_day: :morning) }
   let(:dog1) { create(:dog, owner: create(:user)) }
   let(:dog2) { create(:dog, owner: create(:user)) }
   let(:dog_subscription1) { create(:dog_subscription, dog: dog1, monday: true, tuesday: true, wednesday: true, thursday: true, friday: true) }
@@ -42,6 +42,19 @@ RSpec.describe "Manager", type: :feature do
       click_button 'Create Shift'
 
       expect(page).to have_current_path(edit_shift_path(Shift.last))
+      expect(page).to have_content("Edit Shift")
+      expect(page).to have_content("Available Dogs")
+      expect(page).to have_content(walker1.name)
+      expect(page).to have_content(walker2.name)
+    end
+  end
+
+  describe "can edit a existing shift" do
+    it "edits a existing shift and add dogs to walkers" do
+      visit shifts_path
+      click_link 'Edit'
+
+      expect(page).to have_current_path(edit_shift_path(shift))
       expect(page).to have_content("Edit Shift")
       expect(page).to have_content("Available Dogs")
       expect(page).to have_content(walker1.name)
