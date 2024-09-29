@@ -63,11 +63,20 @@ customer_count.times do
 
   # Each customer owns 1 or 2 dogs
   rand(1..2).times do
+    latitude = Faker::Number.between(from: 40.5774, to: 40.9176)
+    longitude = Faker::Number.between(from: -74.15, to: -73.7004)
+    
     dog = Dog.create!(
       name: DOG_NAMES.sample,
       breed: Faker::Creature::Dog.breed,
       age: rand(1..10),
-      owner: customer
+      owner: customer,
+      street_address: Faker::Address.street_address,
+      city: Faker::Address.city,
+      state: Faker::Address.state_abbr,
+      zip_code: Faker::Address.zip_code,
+      latitude: latitude,
+      longitude: longitude
     )
 
     # Create a DogSubscription with random days
@@ -196,11 +205,20 @@ waitlist_customers.times do
 
   # Each customer owns 1 or 2 dogs
   rand(1..2).times do
+    latitude = Faker::Number.between(from: 40.5774, to: 40.9176)
+    longitude = Faker::Number.between(from: -74.15, to: -73.7004)
+    
     dog = Dog.create!(
       name: DOG_NAMES.sample,
       breed: Faker::Creature::Dog.breed,
       age: rand(1..10),
-      owner: customer
+      owner: customer,
+      street_address: Faker::Address.street_address,
+      city: Faker::Address.city,
+      state: Faker::Address.state_abbr,
+      zip_code: Faker::Address.zip_code,
+      latitude: latitude,
+      longitude: longitude
     )
 
     # Create a DogSubscription with random days
