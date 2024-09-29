@@ -62,7 +62,6 @@ class ShiftsController < ApplicationController
 
   def new
     @shift = Shift.new
-    @walkers = User.where(role: 'walker')
     authorize @shift
   end
 
@@ -73,8 +72,6 @@ class ShiftsController < ApplicationController
     if @shift.save
       redirect_to edit_shift_path(@shift), notice: 'Shift was successfully created.'
     else
-      @walkers = User.where(role: 'walker')
-      @available_dogs = Dog.available_for_shift(params[:shift_time])
       render :new, status: :unprocessable_entity
     end
   end
