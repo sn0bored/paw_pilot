@@ -7,7 +7,6 @@
         <th scope="col" class="px-6 py-3">Walker</th>
         <th scope="col" class="px-6 py-3">Shift</th>
         <th scope="col" class="px-6 py-3">Status</th>
-        <th scope="col" class="px-6 py-3">Action</th>
       </tr>
     </thead>
     <tbody>
@@ -27,9 +26,6 @@
           </td>
           <td class="px-6 py-4">
             <%= schedule.status.titleize %>
-          </td>
-          <td class="px-6 py-4">
-            <%= link_to 'Edit', edit_dog_schedule_path(schedule), class: "font-medium text-blue-600 dark:text-blue-500 hover:underline" %>
           </td>
         </tr>
       <% end %>

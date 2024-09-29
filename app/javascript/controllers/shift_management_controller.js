@@ -1,10 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 import { patch } from "@rails/request.js"
-import Turbo from "@hotwired/turbo"
 
 export default class extends Controller {
   static targets = ["dogList"]
   static values = { shiftId: Number }
+  static classes = ["activeDropzone", "activeItem", "dropTarget"]
 
   connect() {
     this.dogListTargets.forEach(list => {
@@ -13,7 +13,8 @@ export default class extends Controller {
     })
 
     this.element.querySelectorAll('.dog-item').forEach(item => {
-      item.addEventListener('dragstart', this.drag.bind(this))
+      item.addEventListener('dragstart', this.dragstart.bind(this))
+      item.addEventListener('dragend', this.dragend.bind(this))
     })
   }
 
@@ -21,34 +22,65 @@ export default class extends Controller {
     event.preventDefault()
   }
 
-  drag(event) {
-    event.dataTransfer.setData("text", event.target.dataset.dogId)
+  dragstart(event) {
+    this.element.classList.add(...this.activeDropzoneClasses)
+    event.target.classList.add(...this.activeItemClasses)
+    event.dataTransfer.setData("text/plain", event.target.dataset.dogId)
+    event.dataTransfer.effectAllowed = "move"
+  }
+
+  dragend(event) {
+    this.element.classList.remove(...this.activeDropzoneClasses)
+    event.target.classList.remove(...this.activeItemClasses)
+  }
+
+  dragenter(event) {
+    const dropTarget = event.target.closest('[data-walker-id]')
+    if (dropTarget) {
+      dropTarget.classList.add(...this.dropTargetClasses)
+    }
+  }
+
+  dragleave(event) {
+    const dropTarget = event.target.closest('[data-walker-id]')
+    if (dropTarget) {
+      dropTarget.classList.remove(...this.dropTargetClasses)
+    }
   }
 
   async drop(event) {
     event.preventDefault()
-    const dogId = event.dataTransfer.getData("text")
+    const dogId = event.dataTransfer.getData("text/plain")
     const newWalkerId = event.target.closest('[data-walker-id]').dataset.walkerId
+
+    const dropTarget = event.target.closest('[data-walker-id]')
+    if (dropTarget) {
+      dropTarget.classList.remove(...this.dropTargetClasses)
+    }
 
     try {
       const response = await patch(`/shifts/${this.shiftIdValue}/reassign_dog`, {
         body: JSON.stringify({ dog_id: dogId, new_walker_id: newWalkerId }),
         headers: {
           "Content-Type": "application/json",
-          "Accept": "text/vnd.turbo-stream.html", // Changed from application/json
+          "Accept": "text/vnd.turbo-stream.html",
           "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
         }
       })
 
-      if (!response.ok) {
+      if (!response.response.ok) {
         throw new Error('Network response was not ok')
       }
 
-      const html = await response.text()
-      Turbo.renderStreamMessage(html)
+      console.log("Dog reassigned successfully")
+      
+      // TODO: make this work without a full reload
+      window.location.reload()
+
     } catch (error) {
       console.error("An error occurred:", error)
-      // Handle network errors or other exceptions
+      // Handle errors (e.g., show an error message to the user)
     }
-  }
+  }  
+  
 }

@@ -1,13 +1,18 @@
 <h1 class="text-2xl font-bold mb-4">Edit Shift: <%= @shift.pretty_time %></h1>
 
-<div data-controller="shift-management" data-shift-management-shift-id-value="<%= @shift.id %>">
+<div data-controller="shift-management" 
+     data-shift-management-shift-id-value="<%= @shift.id %>"
+     data-shift-management-active-dropzone-class="bg-gray-100"
+     data-shift-management-active-item-class="opacity-50"
+     data-shift-management-drop-target-class="border-2 border-blue-500">
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <% @shift.walkers.each do |walker| %>
       <div class="bg-white shadow-md rounded-lg p-4">
         <h2 class="text-xl font-semibold mb-2"><%= walker.name %></h2>
         <div class="dog-list min-h-[100px] border-2 border-dashed border-gray-300 p-2 rounded-md" 
              data-shift-management-target="dogList" 
-             data-walker-id="<%= walker.id %>">
+             data-walker-id="<%= walker.id %>"
+             data-action="dragenter->shift-management#dragenter dragleave->shift-management#dragleave">
           <% @shift.dog_schedules.where(walker: walker).each do |schedule| %>
             <div class="dog-item bg-blue-100 p-2 mb-2 rounded cursor-move" 
                  draggable="true" 

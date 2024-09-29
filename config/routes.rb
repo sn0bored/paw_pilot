@@ -21,7 +21,7 @@ Rails.application.routes.draw do
   resources :dog_schedules
   resources :shifts do
     member do
-      patch :reassign_dog, defaults: { format: :json }
+      patch :reassign_dog, defaults: { format: :turbo_stream }
     end
   end
   resources :users
