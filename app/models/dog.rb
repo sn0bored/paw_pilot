@@ -3,10 +3,22 @@ class Dog < ApplicationRecord
   has_many :dog_schedules
   has_many :shifts, through: :dog_schedules
   has_one :dog_subscription
+  # TODO: Add in geocoding for use on map
+  # geocoded_by :full_street_address
+  # after_validation :geocode, if: :address_changed?
   
+  # TODO: Add in avatar for dog to make it easier to identify
   has_one_attached :avatar
 
   def last_walker
     dog_schedules.present? ? dog_schedules.last.walker.name : 'N/A'
+  end
+
+  def full_street_address
+    "#{street_address}, #{city}, #{state}, #{zip_code}"
+  end
+
+  def address_changed?
+    street_address_changed? || city_changed? || state_changed? || zip_code_changed?
   end
 end
