@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Manager Functionality", type: :feature do
+RSpec.describe "Manager", type: :feature do
   let(:manager) { create(:user, :manager) }
   let(:shift) { create(:shift, date: Date.today, time_of_day: :morning) }
   let!(:dog1) { create(:dog, :with_subscription) }
