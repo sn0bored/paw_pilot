@@ -3,10 +3,10 @@
     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
       <tr>
         <th scope="col" class="px-6 py-3">Name</th>
+        <th scope="col" class="px-6 py-3">Breed</th>
         <th scope="col" class="px-6 py-3">Owner</th>
-        <th scope="col" class="px-6 py-3">Schedules</th>
         <th scope="col" class="px-6 py-3">Active</th>
-        <th scope="col" class="px-6 py-3">LastWalker</th>
+
       </tr>
     </thead>
     <tbody>
@@ -16,17 +16,15 @@
             <%= dog.name %>
           </th>
           <td class="px-6 py-4">
-            <%= dog.owner.name %>
+            <%= dog.breed %>
           </td>
           <td class="px-6 py-4">
-            <%= dog.dog_schedules.count %>
+            <%= dog.owner.name %>
           </td>
           <td class="px-6 py-4">
             <%= dog.dog_schedules.present? ? 'True' : 'On Wait List' %>
           </td>
-          <td class="px-6 py-4">
-            <%= dog.last_walker %>
-          </td>
+          
         </tr>
       <% end %>
     </tbody>

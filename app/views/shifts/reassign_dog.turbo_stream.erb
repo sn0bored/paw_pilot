@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "shift_#{@shift.id}" do %>
+  <%= render partial: 'shifts/edit_shift', locals: { shift: @shift } %>
+<% end %>

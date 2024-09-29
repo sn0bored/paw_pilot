@@ -1,0 +1,25 @@
+<div id="shift_<%= shift.id %>" data-controller="shift-management" data-shift-management-shift-id-value="<%= shift.id %>">
+  <% if local_assigns[:errors].present? %>
+    <div class="alert alert-danger">
+      <%= errors.join(', ') %>
+    </div>
+  <% end %>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <% shift.walkers.each do |walker| %>
+      <div class="bg-white shadow-md rounded-lg p-4">
+        <h2 class="text-xl font-semibold mb-2"><%= walker.name %></h2>
+        <div class="dog-list min-h-[100px] border-2 border-dashed border-gray-300 p-2 rounded-md" 
+             data-shift-management-target="dogList" 
+             data-walker-id="<%= walker.id %>">
+          <% shift.dog_schedules.where(walker: walker).each do |schedule| %>
+            <div class="dog-item bg-blue-100 p-2 mb-2 rounded cursor-move" 
+                 draggable="true" 
+                 data-dog-id="<%= schedule.dog.id %>">
+              <%= schedule.dog.name %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
