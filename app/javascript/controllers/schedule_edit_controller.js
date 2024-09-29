@@ -4,12 +4,10 @@ export default class extends Controller {
   static targets = ["display", "form", "status"]
 
   connect() {
-    // Add event listener for form submission
     this.formTarget.addEventListener("turbo:submit-end", this.handleSubmitEnd.bind(this))
   }
 
   disconnect() {
-    // Remove event listener when controller is disconnected
     this.formTarget.removeEventListener("turbo:submit-end", this.handleSubmitEnd.bind(this))
   }
 

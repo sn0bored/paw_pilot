@@ -19,7 +19,11 @@ Rails.application.routes.draw do
   root to: 'dashboard#index'
   resources :dogs
   resources :dog_schedules
-  resources :shifts
+  resources :shifts do
+    member do
+      patch :reassign_dog, defaults: { format: :json }
+    end
+  end
   resources :users
   resources :vans
 
