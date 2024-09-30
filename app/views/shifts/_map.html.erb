@@ -1,85 +1,92 @@
 <div id="map-container" class="mb-4" style="height: 400px;"></div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=#{ENV['GOOGLE_MAPS_API_KEY']}"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  function initMap() {
     const mapContainer = document.getElementById('map-container');
     let map;
     let markers = [];
 
-    function initMap() {
-      map = new google.maps.Map(mapContainer, {
-        zoom: 10,
-        center: { lat: 0, lng: 0 }
-      });
+    map = new google.maps.Map(mapContainer, {
+      zoom: 10,
+      center: { lat: 33.7490, lng: -84.3880 } // Atlanta center coordinates
+    });
 
-      const dogItems = [
-        <% @shift.dog_schedules.each do |schedule| %>
-          {
-            name: "<%= schedule.dog.name %>",
-            breed: "<%= schedule.dog.breed %>",
-            shiftLength: "<%= schedule.dog.shift_length %>",
-            zipCode: "<%= schedule.dog.zip_code %>",
-            walker: "<%= schedule.walker.name %>"
-          },
-        <% end %>
-      ];
+    const dogItems = [
+      <% @shift.dog_schedules.each do |schedule| %>
+        {
+          name: "<%= schedule.dog.name %>",
+          breed: "<%= schedule.dog.breed %>",
+          shiftLength: "<%= schedule.dog.shift_length %>",
+          latitude: <%= schedule.dog.latitude %>,
+          longitude: <%= schedule.dog.longitude %>,
+          walker: "<%= schedule.walker.name %>"
+        },
+      <% end %>
+    ];
 
-      const bounds = new google.maps.LatLngBounds();
-      const walkerColors = {};
-      const geocoder = new google.maps.Geocoder();
+    const bounds = new google.maps.LatLngBounds();
+    const walkerColors = {};
+    const predefinedColors = [
+      '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', 
+      '#98D8C8', '#F06292', '#AED581', '#7986CB', 
+      '#FFD54F', '#4DB6AC', '#9575CD', '#F06292'
+    ];
+    let colorIndex = 0;
 
-      dogItems.forEach(dog => {
-        if (dog.zipCode) {
-          if (!walkerColors[dog.walker]) {
-            walkerColors[dog.walker] = getRandomColor();
-          }
+    dogItems.forEach(dog => {
+      if (!walkerColors[dog.walker]) {
+        walkerColors[dog.walker] = predefinedColors[colorIndex];
+        colorIndex = (colorIndex + 1) % predefinedColors.length;
+      }
 
-          geocoder.geocode({ address: dog.zipCode }, function(results, status) {
-            if (status === 'OK') {
-              const marker = new google.maps.Marker({
-                position: results[0].geometry.location,
-                map: map,
-                title: `${dog.name} - ${dog.breed}`,
-                icon: {
-                  path: google.maps.SymbolPath.CIRCLE,
-                  fillColor: walkerColors[dog.walker],
-                  fillOpacity: 0.8,
-                  strokeWeight: 1,
-                  scale: 8
-                }
-              });
-
-              markers.push(marker);
-              bounds.extend(marker.getPosition());
-              map.fitBounds(bounds);
-
-              // Add an info window with dog and walker information
-              const infoWindow = new google.maps.InfoWindow({
-                content: `<strong>${dog.name} - ${dog.breed}</strong><br>Shift Length: ${dog.shiftLength}<br>Walker: ${dog.walker}<br>Zip Code: ${dog.zipCode}`
-              });
-
-              marker.addListener('click', function() {
-                infoWindow.open(map, marker);
-              });
-            } else {
-              console.error('Geocode was not successful for the following reason: ' + status);
-            }
-          });
+      const position = new google.maps.LatLng(dog.latitude, dog.longitude);
+      const marker = new google.maps.Marker({
+        position: position,
+        map: map,
+        title: `${dog.name} - ${dog.breed}`,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          fillColor: walkerColors[dog.walker],
+          fillOpacity: 0.8,
+          strokeWeight: 1,
+          scale: 8
         }
       });
-    }
 
-    function getRandomColor() {
-      const letters = '0123456789ABCDEF';
-      let color = '#';
-      for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
+      markers.push(marker);
+      bounds.extend(position);
+
+      // Add an info window with dog and walker information
+      const infoWindow = new google.maps.InfoWindow({
+        content: `<strong>${dog.name} - ${dog.breed}</strong><br>Shift Length: ${dog.shiftLength}<br>Walker: ${dog.walker}`
+      });
+
+      marker.addListener('click', function() {
+        infoWindow.open(map, marker);
+      });
+    });
+
+    map.fitBounds(bounds);
+  }
+
+  // Function to load the map
+  function loadMapWithDelay() {
+    setTimeout(() => {
+      if (document.getElementById('map-container')) {
+        initMap();
       }
-      return color;
-    }
+    }, 500); // 2000 milliseconds = 2 seconds
+  }
 
-    // Initialize the map on page load
-    initMap();
-  });
+  // Load the map on DOMContentLoaded (for initial page load)
+  document.addEventListener('DOMContentLoaded', loadMapWithDelay);
+
+  // Load the map on turbolinks:load (for subsequent navigation)
+  document.addEventListener('turbolinks:load', loadMapWithDelay);
+
+  // Fallback for cases where turbolinks might not be used
+  if (typeof Turbolinks === 'undefined') {
+    loadMapWithDelay();
+  }
 </script>

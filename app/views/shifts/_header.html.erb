@@ -1,0 +1,13 @@
+<h1 class="text-2xl font-bold mb-4">Edit Shift: <%= @shift.pretty_time %></h1>
+<div class="flex justify-between mb-4">
+  <%= button_to 'Delete Shift', shift_path(@shift), method: :delete, class: "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" %>
+  <% if @shift.dog_schedules.empty? %>
+    <%= button_to 'Run AI Optimization', ai_optimize_shift_path(@shift), method: :post, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+    <%= button_to 'Run Geo Optimization', geo_optimize_shift_path(@shift), method: :post, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+  <% end %>
+</div>
+<% if local_assigns[:error].present? %>
+  <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+    <span class="block sm:inline"><%= error %></span>
+  </div>
+<% end %>
