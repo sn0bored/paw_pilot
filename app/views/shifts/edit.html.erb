@@ -28,9 +28,9 @@
   </div>
 
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-    <% User.dog_walker.each do |walker| %>
+    <% User.where(role: [:dog_walker, :manager]).each do |walker| %>
       <div class="bg-white shadow-md rounded-lg p-4">
-        <h2 class="text-lg font-semibold mb-2"><%= walker.name %></h2>
+        <h2 class="text-lg font-semibold mb-2"><%= walker.name %> (<%= walker.role.titleize %>)</h2>
         
         <div class="dog-list min-h-[100px] border-2 border-dashed border-gray-300 p-2 rounded-md" 
              data-shift-management-target="dogList" 
@@ -43,6 +43,7 @@
               <%= "#{schedule.dog.name} - #{schedule.dog.breed} (#{schedule.dog.shift_length})" %>
             </div>
           <% end %>
+          <span class="drop-area"></span>
         </div>
       </div>
     <% end %>

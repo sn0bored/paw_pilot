@@ -9,6 +9,8 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 # return unless Rails.env.test?
 require 'rspec/rails'
 require 'factory_bot_rails'
+require 'capybara/rspec'
+require 'webdrivers'
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -72,7 +74,25 @@ RSpec.configure do |config|
 
   # Include Devise test helpers for feature specs
   config.include Devise::Test::IntegrationHelpers, type: :feature
+
+  config.include Capybara::DSL
+
+  # Remove the global before block that sets Capybara.current_driver
 end
+
+# Configure Capybara
+Capybara.register_driver :selenium_chrome_headless do |app|
+  options = Selenium::WebDriver::Chrome::Options.new
+  options.add_argument('--headless')
+  options.add_argument('--disable-gpu') if Gem.win_platform?
+  options.add_argument('--no-sandbox')
+  options.add_argument('--disable-dev-shm-usage')
+  
+  Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
+end
+
+Capybara.javascript_driver = :selenium_chrome_headless
+Capybara.default_max_wait_time = 10 # seconds
 
 # At the bottom of the file
 Shoulda::Matchers.configure do |config|

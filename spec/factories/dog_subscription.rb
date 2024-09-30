@@ -6,5 +6,6 @@ FactoryBot.define do
     wednesday { [true, false].sample }
     thursday { [true, false].sample }
     friday { [true, false].sample }
+    day_length { 0 }
   end
 end
