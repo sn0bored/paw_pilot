@@ -172,7 +172,7 @@
 Start the Rails server:
 
 ```bash
-rails server
+bin/dev
 ```
 
 Visit the application at [http://localhost:3000](http://localhost:3000).
