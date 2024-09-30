@@ -10,49 +10,70 @@
     <span class="block sm:inline"><%= error %></span>
   </div>
 <% end %>
-<div data-controller="shift-management" 
-     data-shift-management-shift-id-value="<%= @shift.id %>"
-     data-shift-management-active-dropzone-class="bg-gray-100"
-     data-shift-management-active-item-class="opacity-50"
-     data-shift-management-drop-target-class="border-2 border-blue-500">
+<div class="flex mb-4">
+  <%if params[:type] != 'map' %>
+    <%= link_to edit_shift_path(@shift, type: 'map') do %>
+      <button class="bg-purple-500 hover:bg-purple-700 font-bold py-2 px-4 rounded float-right">
+      <i class="fa fa-map-marker"></i> View Map
+      </button>
+    <% end %>
+  <% else %>
+    <%= link_to edit_shift_path(@shift) do %>
+      <button class="bg-purple-500 hover:bg-purple-700 font-bold py-2 px-4 rounded float-right">
+      <i class="fa fa-map-marker"></i> View List
+      </button>
+    <% end %>
+  <% end %>
+</div>
+<%if params[:type] != 'map' %>
+  <div data-controller="shift-management" 
+      data-shift-management-shift-id-value="<%= @shift.id %>"
+      data-shift-management-active-dropzone-class="bg-gray-100"
+      data-shift-management-active-item-class="opacity-50"
+      data-shift-management-drop-target-class="border-2 border-blue-500">
 
-  <div class="mb-4">
-    <h2 class="text-xl font-semibold mb-2">Available Dogs</h2>
-    <div class="available-dogs-list min-h-[50px] max-h-[150px] overflow-y-auto border-2 border-dashed border-gray-300 p-2 rounded-md flex flex-wrap gap-2"
-         data-shift-management-target="availableDogsList">
-      <% @available_dogs.each do |dog| %>
-        <div class="dog-item bg-green-100 p-2 rounded cursor-move text-sm flex items-center" 
-             draggable="true" 
-             data-dog-id="<%= dog.id %>">
-          <%= "#{dog.name} - #{dog.breed} (#{dog.shift_length}) "%>
+    <div class="mb-4">
+      <h2 class="text-xl font-semibold mb-2">Available Dogs</h2>
+      <div class="available-dogs-list min-h-[50px] max-h-[150px] overflow-y-auto border-2 border-dashed border-gray-300 p-2 rounded-md flex flex-wrap gap-2"
+          data-shift-management-target="availableDogsList">
+        <% @available_dogs.each do |dog| %>
+          <div class="dog-item bg-green-100 p-2 rounded cursor-move text-sm flex items-center" 
+              draggable="true" 
+              data-dog-id="<%= dog.id %>">
+            <%= "#{dog.name} - #{dog.breed} (#{dog.shift_length}) "%>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <% User.where(role: [:dog_walker, :manager]).each do |walker| %>
+        <div class="bg-white shadow-md rounded-lg p-4">
+          <h2 class="text-lg font-semibold mb-2"><%= walker.name %> (<%= walker.role.titleize %>)</h2>
+          
+          <div class="dog-list min-h-[100px] border-2 border-dashed border-gray-300 p-2 rounded-md" 
+              data-shift-management-target="dogList" 
+              data-walker-id="<%= walker.id %>"
+              data-action="dragenter->shift-management#dragenter dragleave->shift-management#dragleave">
+            <% @shift.dog_schedules.where(walker: walker).each do |schedule| %>
+              <div class="dog-item bg-blue-100 p-2 mb-2 rounded cursor-move text-sm" 
+                  draggable="true" 
+                  data-dog-id="<%= schedule.dog.id %>">
+                <%= "#{schedule.dog.name} - #{schedule.dog.breed} (#{schedule.dog.shift_length})" %>
+              </div>
+            <% end %>
+            <span class="drop-area"></span>
+          </div>
         </div>
       <% end %>
     </div>
-  </div>
 
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-    <% User.where(role: [:dog_walker, :manager]).each do |walker| %>
-      <div class="bg-white shadow-md rounded-lg p-4">
-        <h2 class="text-lg font-semibold mb-2"><%= walker.name %> (<%= walker.role.titleize %>)</h2>
-        
-        <div class="dog-list min-h-[100px] border-2 border-dashed border-gray-300 p-2 rounded-md" 
-             data-shift-management-target="dogList" 
-             data-walker-id="<%= walker.id %>"
-             data-action="dragenter->shift-management#dragenter dragleave->shift-management#dragleave">
-          <% @shift.dog_schedules.where(walker: walker).each do |schedule| %>
-            <div class="dog-item bg-blue-100 p-2 mb-2 rounded cursor-move text-sm" 
-                 draggable="true" 
-                 data-dog-id="<%= schedule.dog.id %>">
-              <%= "#{schedule.dog.name} - #{schedule.dog.breed} (#{schedule.dog.shift_length})" %>
-            </div>
-          <% end %>
-          <span class="drop-area"></span>
-        </div>
-      </div>
-    <% end %>
+    <div class="mt-4">
+      <%= link_to 'Back to Shifts', shifts_path, class: "text-blue-600 hover:underline" %>
+    </div>
   </div>
-
-  <div class="mt-4">
-    <%= link_to 'Back to Shifts', shifts_path, class: "text-blue-600 hover:underline" %>
+<% else %>
+  <div>
+    <%= render 'map' %>
   </div>
-</div>
+<% end %>

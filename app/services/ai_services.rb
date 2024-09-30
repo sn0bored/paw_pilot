@@ -20,7 +20,7 @@ module AiServices
     def call_openai
       @client.chat(
         parameters: {
-          model: ENV.fetch('GPT_COMPLETIONS_MODEL', 'gpt-4-0613'),
+          model: ENV.fetch('GPT_COMPLETIONS_MODEL', 'gpt-4o-2024-08-06'),
           messages: [{ role: "user", content: prompt }],
           functions: functions,
           function_call: { name: "group_dogs" }
@@ -44,6 +44,18 @@ module AiServices
       <<~PROMPT
         You are tasked with organizing dog walking routes for our service. We have a list of dogs, each with an ID and a ZIP Code. Please group these dogs into batches, each containing up to 12 dogs, ensuring that the dogs in each batch are geographically close to one another based on their ZIP Codes. The goal is to minimize the total number of batches while making it efficient for a walker to pick up the dogs in each batch.
 
+        Important rules:
+        1. Each batch must contain no more than 12 dogs.
+        2. Dogs in each batch should be geographically close based on their ZIP Codes.
+
+        To determine if ZIP Codes are close:
+        1. Compare the first three digits of the ZIP Codes. These represent larger geographical areas.
+        2. If the first three digits are the same, the ZIP Codes are likely close.
+        3. If the first three digits differ, compare the first two digits. ZIP Codes with the same first two digits are generally in the same state or region.
+        4. For ZIP Codes with different first two digits, use this formula to estimate distance:
+           distance = |ZIP1 - ZIP2|
+           Lower values indicate closer proximity.
+
         Here is the list of dogs:
         #{dogs_list}
 
@@ -56,6 +68,8 @@ module AiServices
             ...
           ]
         }
+
+        Ensure that each batch is optimized for geographical proximity using the guidelines provided above.
       PROMPT
     end
 
@@ -87,12 +101,13 @@ module AiServices
 
     def assign_dogs_to_walkers(dog_batches)
       walkers = User.where(role: [:dog_walker, :manager])
-      
       dog_batches.each_with_index do |batch, index|
         walker = walkers[index % walkers.count]
         
         batch.each do |dog_id|
-          @shift.dog_schedules.create(dog_id: dog_id, user_id: walker.id)
+          if Dog.where(id: dog_id).present?
+            @shift.dog_schedules.create(dog_id: dog_id, user_id: walker.id)
+          end
         end
       end
     end

@@ -25,7 +25,6 @@ class ShiftsController < ApplicationController
     
     new_walker = User.find(params[:new_walker_id])
     
-    # Check van capacity
     if new_walker.dogs_for_shift(@shift).count >= Van::DEFAULT_CAPACITY
       return
     end
@@ -33,14 +32,12 @@ class ShiftsController < ApplicationController
     dog_schedule = @shift.dog_schedules.find_by(dog_id: params[:dog_id])
     
     if dog_schedule
-      # Update existing dog schedule
       if dog_schedule.update(user_id: params[:new_walker_id])
         render turbo_stream: turbo_stream.replace("shift_#{@shift.id}", partial: 'shifts/edit_shift', locals: { shift: @shift })
       else
         render turbo_stream: turbo_stream.replace("shift_#{@shift.id}", partial: 'shifts/edit_shift', locals: { shift: @shift, error: 'Failed to reassign dog.' }), status: :unprocessable_entity
       end
     else
-      # Create new dog schedule
       new_dog_schedule = @shift.dog_schedules.new(dog_id: params[:dog_id], user_id: params[:new_walker_id])
       if new_dog_schedule.save
         render turbo_stream: turbo_stream.replace("shift_#{@shift.id}", partial: 'shifts/edit_shift', locals: { shift: @shift })
@@ -90,12 +87,8 @@ class ShiftsController < ApplicationController
     @shift = Shift.find(params[:id])
     authorize @shift
 
-    if @shift.dog_schedules.any?
-      redirect_to edit_shift_path(@shift), alert: 'Cannot optimize shift with existing schedules.'
-      return
-    end
-
     begin
+      # this could be done with geokit but I want to show how to do it with AI
       AiServices::OptimizeShiftService.new(@shift.id).optimize
       redirect_to edit_shift_path(@shift), notice: 'Shift has been optimized using AI.'
     rescue => e

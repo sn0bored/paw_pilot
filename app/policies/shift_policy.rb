@@ -32,4 +32,8 @@ class ShiftPolicy < ApplicationPolicy
   def destroy?
     @user.manager?
   end
+
+  def ai_optimize?
+    @user.manager?
+  end
 end

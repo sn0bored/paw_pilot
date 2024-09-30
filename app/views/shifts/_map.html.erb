@@ -1,0 +1,85 @@
+<div id="map-container" class="mb-4" style="height: 400px;"></div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const mapContainer = document.getElementById('map-container');
+    let map;
+    let markers = [];
+
+    function initMap() {
+      map = new google.maps.Map(mapContainer, {
+        zoom: 10,
+        center: { lat: 0, lng: 0 }
+      });
+
+      const dogItems = [
+        <% @shift.dog_schedules.each do |schedule| %>
+          {
+            name: "<%= schedule.dog.name %>",
+            breed: "<%= schedule.dog.breed %>",
+            shiftLength: "<%= schedule.dog.shift_length %>",
+            zipCode: "<%= schedule.dog.zip_code %>",
+            walker: "<%= schedule.walker.name %>"
+          },
+        <% end %>
+      ];
+
+      const bounds = new google.maps.LatLngBounds();
+      const walkerColors = {};
+      const geocoder = new google.maps.Geocoder();
+
+      dogItems.forEach(dog => {
+        if (dog.zipCode) {
+          if (!walkerColors[dog.walker]) {
+            walkerColors[dog.walker] = getRandomColor();
+          }
+
+          geocoder.geocode({ address: dog.zipCode }, function(results, status) {
+            if (status === 'OK') {
+              const marker = new google.maps.Marker({
+                position: results[0].geometry.location,
+                map: map,
+                title: `${dog.name} - ${dog.breed}`,
+                icon: {
+                  path: google.maps.SymbolPath.CIRCLE,
+                  fillColor: walkerColors[dog.walker],
+                  fillOpacity: 0.8,
+                  strokeWeight: 1,
+                  scale: 8
+                }
+              });
+
+              markers.push(marker);
+              bounds.extend(marker.getPosition());
+              map.fitBounds(bounds);
+
+              // Add an info window with dog and walker information
+              const infoWindow = new google.maps.InfoWindow({
+                content: `<strong>${dog.name} - ${dog.breed}</strong><br>Shift Length: ${dog.shiftLength}<br>Walker: ${dog.walker}<br>Zip Code: ${dog.zipCode}`
+              });
+
+              marker.addListener('click', function() {
+                infoWindow.open(map, marker);
+              });
+            } else {
+              console.error('Geocode was not successful for the following reason: ' + status);
+            }
+          });
+        }
+      });
+    }
+
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    // Initialize the map on page load
+    initMap();
+  });
+</script>
