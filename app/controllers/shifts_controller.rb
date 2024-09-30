@@ -13,10 +13,16 @@ class ShiftsController < ApplicationController
   def edit
     @shift = Shift.includes(dog_schedules: [:dog, :walker]).find(params[:id])
     authorize @shift
+
     @available_dogs = Dog.joins(:dog_subscription)
+                         .includes(:dog_subscription)
                          .where("dog_subscriptions.day_length IN (?) OR dog_subscriptions.day_length = ?", 
                                 [DogSubscription.day_lengths[@shift.time_of_day], DogSubscription.day_lengths['full']], DogSubscription.day_lengths['full'])
                          .where.not(id: @shift.dogs.pluck(:id))
+                         .select('dogs.*, dog_subscriptions.day_length as shift_length')
+
+    @walkers = User.where(role: [:dog_walker, :manager])
+                   .includes(:dog_schedules)
   end
 
   def reassign_dog
@@ -79,8 +85,16 @@ class ShiftsController < ApplicationController
     @shift = Shift.find(params[:id])
     authorize @shift
 
-    @shift.destroy
+    ActiveRecord::Base.transaction do
+      # Delete all related assignments first
+      @shift.assignments.destroy_all
+      # Now delete the shift
+      @shift.destroy!
+    end
+
     redirect_to shifts_path, notice: 'Shift was successfully deleted.'
+  rescue ActiveRecord::RecordNotDestroyed => e
+    redirect_to shifts_path, alert: "Failed to delete shift: #{e.message}"
   end
 
   def ai_optimize
@@ -88,10 +102,23 @@ class ShiftsController < ApplicationController
     authorize @shift
 
     begin
-      # this could be done with geokit but I want to show how to do it with AI
       AiServices::OptimizeShiftService.new(@shift.id).optimize
       redirect_to edit_shift_path(@shift), notice: 'Shift has been optimized using AI.'
     rescue => e
+      puts "Error: #{e.message}"
+      redirect_to edit_shift_path(@shift), alert: "Failed to optimize shift: #{e.message}"
+    end
+  end
+
+  def geo_optimize
+    @shift = Shift.find(params[:id])
+    authorize @shift
+
+    begin
+      GeoService.new(@shift.id).optimize
+      redirect_to edit_shift_path(@shift), notice: 'Shift has been optimized using AI.'
+    rescue => e
+      puts "Error: #{e.message}"
       redirect_to edit_shift_path(@shift), alert: "Failed to optimize shift: #{e.message}"
     end
   end
