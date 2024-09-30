@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_29_094637) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_30_131329) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -73,6 +73,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_29_094637) do
     t.boolean "friday", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "day_length", default: 0
     t.index ["dog_id"], name: "index_dog_subscriptions_on_dog_id"
   end
 
