@@ -86,6 +86,23 @@ class ShiftsController < ApplicationController
     redirect_to shifts_path, notice: 'Shift was successfully deleted.'
   end
 
+  def ai_optimize
+    @shift = Shift.find(params[:id])
+    authorize @shift
+
+    if @shift.dog_schedules.any?
+      redirect_to edit_shift_path(@shift), alert: 'Cannot optimize shift with existing schedules.'
+      return
+    end
+
+    begin
+      AiServices::OptimizeShiftService.new(@shift.id).optimize
+      redirect_to edit_shift_path(@shift), notice: 'Shift has been optimized using AI.'
+    rescue => e
+      redirect_to edit_shift_path(@shift), alert: "Failed to optimize shift: #{e.message}"
+    end
+  end
+
   private
 
   def shift_params
