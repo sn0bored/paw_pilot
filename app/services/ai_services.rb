@@ -39,22 +39,25 @@ module AiServices
                                  DogSubscription.day_lengths['full'])
                           .where.not(id: @shift.dogs.pluck(:id))
 
-      dogs_list = available_dogs.map { |dog| { id: dog.id, zip_code: dog.zip_code }.to_json }.join(",\n")
+      dogs_list = available_dogs.map { |dog| { id: dog.id, latitude: dog.latitude, longitude: dog.longitude }.to_json }.join(",\n")
 
       <<~PROMPT
-        You are tasked with organizing dog walking routes for our service. We have a list of dogs, each with an ID and a ZIP Code. Please group these dogs into batches, each containing up to 12 dogs, ensuring that the dogs in each batch are geographically close to one another based on their ZIP Codes. The goal is to minimize the total number of batches while making it efficient for a walker to pick up the dogs in each batch.
+        You are tasked with organizing dog walking routes for our service. We have a list of dogs, each with an ID, latitude, and longitude. Please group these dogs into batches, each containing up to 12 dogs, ensuring that the dogs in each batch are geographically close to one another based on their coordinates. The goal is to minimize the total number of batches while making it efficient for a walker to pick up the dogs in each batch.
 
         Important rules:
         1. Each batch must contain no more than 12 dogs.
-        2. Dogs in each batch should be geographically close based on their ZIP Codes.
+        2. Dogs in each batch should be geographically close based on their latitude and longitude.
 
-        To determine if ZIP Codes are close:
-        1. Compare the first three digits of the ZIP Codes. These represent larger geographical areas.
-        2. If the first three digits are the same, the ZIP Codes are likely close.
-        3. If the first three digits differ, compare the first two digits. ZIP Codes with the same first two digits are generally in the same state or region.
-        4. For ZIP Codes with different first two digits, use this formula to estimate distance:
-           distance = |ZIP1 - ZIP2|
-           Lower values indicate closer proximity.
+        To determine if coordinates are close:
+        1. Use the Haversine formula to calculate the distance between two points:
+           a = sin²(Δφ/2) + cos φ1 ⋅ cos φ2 ⋅ sin²(Δλ/2)
+           c = 2 ⋅ atan2( √a, √(1−a) )
+           d = R ⋅ c
+           where φ is latitude, λ is longitude, R is earth's radius (mean radius = 6,371km)
+        2. Alternatively, for small distances, you can use the approximation:
+           distance ≈ √((x2-x1)² + (y2-y1)²)
+           where x = R * cos(lat) * cos(lon) and y = R * cos(lat) * sin(lon)
+        3. Group dogs with the smallest distances between them.
 
         Here is the list of dogs:
         #{dogs_list}
@@ -77,7 +80,7 @@ module AiServices
       [
         {
           "name": "group_dogs",
-          "description": "Groups dogs into batches based on ZIP Code proximity",
+          "description": "Groups dogs into batches based on geographical proximity",
           "parameters": {
             "type": "object",
             "properties": {
