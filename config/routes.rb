@@ -24,6 +24,7 @@ Rails.application.routes.draw do
       patch :reassign_dog, defaults: { format: :turbo_stream }
       patch :unassign_dog, defaults: { format: :turbo_stream }
       post :ai_optimize
+      post :geo_optimize
     end
   end
   resources :users
