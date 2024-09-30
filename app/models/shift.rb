@@ -1,5 +1,5 @@
 class Shift < ApplicationRecord
-  has_many :assignments
+  has_many :assignments, dependent: :destroy
   has_many :dog_walkers, through: :assignments, source: :user
   has_many :dog_schedules, dependent: :destroy
   has_many :dogs, through: :dog_schedules
