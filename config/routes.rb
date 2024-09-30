@@ -23,6 +23,7 @@ Rails.application.routes.draw do
     member do
       patch :reassign_dog, defaults: { format: :turbo_stream }
       patch :unassign_dog, defaults: { format: :turbo_stream }
+      post :ai_optimize
     end
   end
   resources :users
