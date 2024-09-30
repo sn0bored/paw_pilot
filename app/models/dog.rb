@@ -22,6 +22,10 @@ class Dog < ApplicationRecord
     street_address_changed? || city_changed? || state_changed? || zip_code_changed?
   end
 
+  def shift_length
+    dog_subscription&.day_length || 'N/A'
+  end
+
   def self.available_for_day(day_of_week)
     joins(:dog_subscription)
       .where("dog_subscriptions.#{day_of_week} = ?", true)

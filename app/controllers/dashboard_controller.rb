@@ -9,6 +9,8 @@ class DashboardController < ApplicationController
 
     @morning_dog_schedules = current_user.dog_schedules.where(shift: @morning_shift)
     @afternoon_dog_schedules = current_user.dog_schedules.where(shift: @afternoon_shift)
+
+    @can_add_shifts = current_user.manager? && (!@morning_shift || !@afternoon_shift)
   end
 
   private

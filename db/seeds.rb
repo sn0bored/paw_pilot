@@ -50,7 +50,7 @@ end
 end
 
 # Create customers and their dogs
-customer_count = 80
+customer_count = 150  # Increased from 80
 dog_count = 0
 
 customer_count.times do
@@ -61,11 +61,11 @@ customer_count.times do
     name: Faker::Name.name
   )
 
-  # Each customer owns 1 or 2 dogs
-  rand(1..2).times do
+  # Each customer owns 1 to 3 dogs
+  rand(1..3).times do
     latitude = Faker::Number.between(from: 40.5774, to: 40.9176)
     longitude = Faker::Number.between(from: -74.15, to: -73.7004)
-    
+
     dog = Dog.create!(
       name: DOG_NAMES.sample,
       breed: Faker::Creature::Dog.breed,
@@ -79,14 +79,15 @@ customer_count.times do
       longitude: longitude
     )
 
-    # Create a DogSubscription with random days
+    # Create a DogSubscription with random days and day_length
     DogSubscription.create!(
       dog: dog,
       monday: [true, false].sample,
       tuesday: [true, false].sample,
       wednesday: [true, false].sample,
       thursday: [true, false].sample,
-      friday: [true, false].sample
+      friday: [true, false].sample,
+      day_length: DogSubscription.day_lengths.keys.sample  # Randomly assign day_length
     )
 
     dog_count += 1
@@ -155,8 +156,15 @@ shifts.each do |shift|
                  next # Skip weekends
                end
 
-  # Select dogs subscribed for this day
-  subscribed_dogs = Dog.joins(:dog_subscription).where(dog_subscriptions: { day_symbol => true }).to_a
+  # Determine the time of day for the shift
+  shift_time = shift.time_of_day  # 'morning' or 'afternoon'
+
+  # Select dogs subscribed for this day and time
+  subscribed_dogs = Dog.joins(:dog_subscription).where(
+    dog_subscriptions: { day_symbol => true }
+  ).where(
+    dog_subscriptions: { day_length: ['full', shift_time] }
+  ).distinct.to_a
 
   # Shuffle dogs to randomize assignment
   subscribed_dogs.shuffle!
@@ -165,34 +173,47 @@ shifts.each do |shift|
   walker_assignments = Assignment.where(shift: shift).to_a
 
   # Assign dogs to walkers and create DogSchedules
-  subscribed_dogs.each_with_index do |dog, index|
-    assignment = walker_assignments[index % walker_assignments.size]
+  dogs_per_walker = Hash.new(0)
+  max_dogs_per_walker = 12
+
+  subscribed_dogs.each do |dog|
+    # Find a walker who hasn't reached max capacity
+    assignment = walker_assignments.find do |a|
+      dogs_per_walker[a.user_id] < max_dogs_per_walker
+    end
+
+    break unless assignment  # No available walkers
 
     # Set status based on shift date
     if shift.date < today
-      # Past shifts - status is 'dropped_off'
       status = 'dropped_off'
     elsif shift.date == today
-      # Today's shifts - random status
       status = DogSchedule.statuses.keys.sample
     else
-      # Future shifts - status is 'home'
       status = 'home'
     end
 
+    # Assign the dog to the walker
     DogSchedule.create!(
       dog: dog,
       shift: shift,
       status: status,
       walker: assignment.user
     )
+
+    # Increment the count
+    dogs_per_walker[assignment.user_id] += 1
   end
+
+  # Output the number of dogs assigned to the shift
+  total_dogs_assigned = dogs_per_walker.values.sum
+  puts "Shift on #{shift.date} (#{shift.time_of_day}): Assigned #{total_dogs_assigned} dogs"
 end
 
 puts "Assigned dogs to shifts and created DogSchedules with appropriate statuses."
 
 # Create a waitlist (additional customers and dogs beyond capacity)
-waitlist_customers = 20
+waitlist_customers = 50  # Increased from 20
 waitlist_dog_count = 0
 
 waitlist_customers.times do
@@ -203,11 +224,11 @@ waitlist_customers.times do
     name: Faker::Name.name
   )
 
-  # Each customer owns 1 or 2 dogs
-  rand(1..2).times do
+  # Each customer owns 1 to 3 dogs
+  rand(1..3).times do
     latitude = Faker::Number.between(from: 40.5774, to: 40.9176)
     longitude = Faker::Number.between(from: -74.15, to: -73.7004)
-    
+
     dog = Dog.create!(
       name: DOG_NAMES.sample,
       breed: Faker::Creature::Dog.breed,
@@ -221,14 +242,15 @@ waitlist_customers.times do
       longitude: longitude
     )
 
-    # Create a DogSubscription with random days
+    # Create a DogSubscription with random days and day_length
     DogSubscription.create!(
       dog: dog,
       monday: [true, false].sample,
       tuesday: [true, false].sample,
       wednesday: [true, false].sample,
       thursday: [true, false].sample,
-      friday: [true, false].sample
+      friday: [true, false].sample,
+      day_length: DogSubscription.day_lengths.keys.sample
     )
 
     waitlist_dog_count += 1

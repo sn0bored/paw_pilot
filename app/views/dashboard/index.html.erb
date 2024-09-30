@@ -13,27 +13,52 @@
     <% end %>
   </div>
 
+  <%if current_user.manager?%>
+    <div class="mb-8 flex justify-center space-x-4">
+      <% if @morning_shift %>
+        <%= link_to "View Morning Shift", edit_shift_path(@morning_shift), class: "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" %>
+      <% else %>
+        <%= button_to "Add Morning Shift", shifts_path, method: :post, params: { shift: { date: @date, time_of_day: 'morning' } }, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+      <% end %>
+      
+      <% if @afternoon_shift %>
+        <%= link_to "View Afternoon Shift", edit_shift_path(@afternoon_shift), class: "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" %>
+      <% else %>
+        <%= button_to "Add Afternoon Shift", shifts_path, method: :post, params: { shift: { date: @date, time_of_day: 'afternoon' } }, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+      <% end %>
+    </div>
+  <%end%>
+
   <div class="space-y-8">
-    <div>
-      <h2 class="text-2xl font-semibold mb-4">Morning Schedules</h2>
-      <div class="flex flex-wrap -mx-2">
-        <% @morning_dog_schedules.each do |dog_schedule| %>
-          <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4">
-            <%= render 'dog_schedule_card', dog_schedule: dog_schedule %>
-          </div>
-        <% end %>
+    <% if @morning_dog_schedules.any? %>
+      <div>
+        <h2 class="text-2xl font-semibold mb-4">Morning Schedules</h2>
+        <div class="flex flex-wrap -mx-2">
+          <% @morning_dog_schedules.each do |dog_schedule| %>
+            <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4">
+              <%= render 'dog_schedule_card', dog_schedule: dog_schedule %>
+            </div>
+          <% end %>
+        </div>
       </div>
-    </div>
-    <div>
-      <h2 class="text-2xl font-semibold mb-4">Afternoon Schedules</h2>
-      <div class="flex flex-wrap -mx-2">
-        <% @afternoon_dog_schedules.each do |dog_schedule| %>
-          <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4">
-            <%= render 'dog_schedule_card', dog_schedule: dog_schedule %>
-          </div>
-        <% end %>
+    <% end %>
+
+    <% if @afternoon_dog_schedules.any? %>
+      <div>
+        <h2 class="text-2xl font-semibold mb-4">Afternoon Schedules</h2>
+        <div class="flex flex-wrap -mx-2">
+          <% @afternoon_dog_schedules.each do |dog_schedule| %>
+            <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4">
+              <%= render 'dog_schedule_card', dog_schedule: dog_schedule %>
+            </div>
+          <% end %>
+        </div>
       </div>
-    </div>
+    <% end %>
+
+    <% if @morning_dog_schedules.empty? && @afternoon_dog_schedules.empty? %>
+      <p class="text-center text-gray-600">You have no scheduled walks for this day.</p>
+    <% end %>
   </div>
 </div>
 

@@ -21,7 +21,7 @@
         <div class="dog-item bg-green-100 p-2 rounded cursor-move text-sm flex items-center" 
              draggable="true" 
              data-dog-id="<%= dog.id %>">
-          <%= dog.name %>
+          <%= "#{dog.name} - #{dog.breed} (#{dog.shift_length}) "%>
         </div>
       <% end %>
     </div>
@@ -40,7 +40,7 @@
             <div class="dog-item bg-blue-100 p-2 mb-2 rounded cursor-move text-sm" 
                  draggable="true" 
                  data-dog-id="<%= schedule.dog.id %>">
-              <%= schedule.dog.name %>
+              <%= "#{schedule.dog.name} - #{schedule.dog.breed} (#{schedule.dog.shift_length})" %>
             </div>
           <% end %>
         </div>

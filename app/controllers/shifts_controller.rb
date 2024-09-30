@@ -13,7 +13,9 @@ class ShiftsController < ApplicationController
   def edit
     @shift = Shift.includes(dog_schedules: [:dog, :walker]).find(params[:id])
     authorize @shift
-    @available_dogs = Dog.available_for_day(@shift.date.strftime('%A').downcase)
+    @available_dogs = Dog.joins(:dog_subscription)
+                         .where("dog_subscriptions.day_length IN (?) OR dog_subscriptions.day_length = ?", 
+                                [DogSubscription.day_lengths[@shift.time_of_day], DogSubscription.day_lengths['full']], DogSubscription.day_lengths['full'])
                          .where.not(id: @shift.dogs.pluck(:id))
   end
 
@@ -72,7 +74,7 @@ class ShiftsController < ApplicationController
     if @shift.save
       redirect_to edit_shift_path(@shift), notice: 'Shift was successfully created.'
     else
-      render :new, status: :unprocessable_entity
+      redirect_to root_path, alert: 'Failed to create shift.'
     end
   end
 
