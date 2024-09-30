@@ -36,4 +36,8 @@ class ShiftPolicy < ApplicationPolicy
   def ai_optimize?
     @user.manager?
   end
+
+  def geo_optimize?
+    @user.manager?
+  end
 end
