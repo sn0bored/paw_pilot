@@ -353,9 +353,8 @@ The seed data is designed to provide a realistic simulation of the company's ope
 
 ## Getting Help
 
-If you encounter any issues or have questions, feel free to reach out via email or create an issue in the repository.
+If you encounter any issues or have questions, feel free to create an issue in the repository.
 
-- **Email:** [your-email@example.com](mailto:your-email@example.com)
 - **GitHub Issues:** [https://github.com/yourusername/paw-pilot/issues](https://github.com/yourusername/paw-pilot/issues)
 
 ---
