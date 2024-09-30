@@ -141,6 +141,8 @@ GEM
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
     json (2.7.2)
+    kmeans-clusterer (0.11.4)
+      narray (~> 0.6)
     logger (1.6.1)
     loofah (2.22.0)
       crass (~> 1.0.2)
@@ -157,6 +159,7 @@ GEM
     msgpack (1.7.2)
     multipart-post (2.4.1)
     mutex_m (0.2.0)
+    narray (0.6.1.2)
     net-http (0.4.1)
       uri
     net-imap (0.4.16)
@@ -335,6 +338,7 @@ DEPENDENCIES
   faker
   importmap-rails
   jbuilder
+  kmeans-clusterer
   pg
   puma (>= 5.0)
   pundit

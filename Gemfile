@@ -43,6 +43,7 @@ gem "bootsnap", require: false
 gem 'devise'
 gem 'pundit'
 gem "ruby-openai"
+gem 'kmeans-clusterer'
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
