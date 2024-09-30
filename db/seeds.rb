@@ -50,7 +50,7 @@ end
 end
 
 # Create customers and their dogs
-customer_count = 150  # Increased from 80
+customer_count = 50
 dog_count = 0
 
 customer_count.times do
@@ -63,8 +63,9 @@ customer_count.times do
 
   # Each customer owns 1 to 3 dogs
   rand(1..3).times do
-    latitude = Faker::Number.between(from: 40.5774, to: 40.9176)
-    longitude = Faker::Number.between(from: -74.15, to: -73.7004)
+    # Atlanta area coordinates
+    latitude = Faker::Number.between(from: 33.6, to: 33.9)
+    longitude = Faker::Number.between(from: -84.5, to: -84.2)
 
     dog = Dog.create!(
       name: DOG_NAMES.sample,
@@ -72,8 +73,8 @@ customer_count.times do
       age: rand(1..10),
       owner: customer,
       street_address: Faker::Address.street_address,
-      city: Faker::Address.city,
-      state: Faker::Address.state_abbr,
+      city: 'Atlanta',
+      state: 'GA',
       zip_code: Faker::Address.zip_code,
       latitude: latitude,
       longitude: longitude
@@ -213,7 +214,7 @@ end
 puts "Assigned dogs to shifts and created DogSchedules with appropriate statuses."
 
 # Create a waitlist (additional customers and dogs beyond capacity)
-waitlist_customers = 50  # Increased from 20
+waitlist_customers = 10
 waitlist_dog_count = 0
 
 waitlist_customers.times do
@@ -226,8 +227,9 @@ waitlist_customers.times do
 
   # Each customer owns 1 to 3 dogs
   rand(1..3).times do
-    latitude = Faker::Number.between(from: 40.5774, to: 40.9176)
-    longitude = Faker::Number.between(from: -74.15, to: -73.7004)
+    # Atlanta area coordinates
+    latitude = Faker::Number.between(from: 33.6, to: 33.9)
+    longitude = Faker::Number.between(from: -84.5, to: -84.2)
 
     dog = Dog.create!(
       name: DOG_NAMES.sample,
@@ -235,8 +237,8 @@ waitlist_customers.times do
       age: rand(1..10),
       owner: customer,
       street_address: Faker::Address.street_address,
-      city: Faker::Address.city,
-      state: Faker::Address.state_abbr,
+      city: 'Atlanta',
+      state: 'GA',
       zip_code: Faker::Address.zip_code,
       latitude: latitude,
       longitude: longitude
